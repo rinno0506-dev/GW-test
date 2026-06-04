@@ -752,7 +752,8 @@ a:[
 "E2Eテスト",
 "役割観察"
 ],
-correct:[0,2,4:truecorrect:[0,2,4,6],
+correct:[0,2,4,6],
+multi:true
 },
 
 {
@@ -1535,7 +1536,6 @@ function start(){
 
   show();
 }
-``
 // ===== 表示 =====
 function show(){
   let q=questions[i];
@@ -1647,41 +1647,12 @@ function nextQuestion(){
     document.getElementById("result").innerHTML = html;
   }
 }
-  function retryWrong(){
+ // ===== 間違い問題だけ再挑戦 =====
+function retryWrong(){
 
   if(wrongList.length === 0){
     return;
   }
-
-    function retryNew(){
-
-  let count = questions.length;
-
-  // 前回使ってない問題だけ抽出
-  let filtered = base.filter(q => !usedQuestions.includes(q.q));
-
-  // 足りない場合は全体から補充
-  if(filtered.length < count){
-    filtered = [...base];
-  }
-
-  shuffle(filtered);
-
-  questions = filtered.slice(0,count);
-
-  // 今回の問題も履歴に追加
-  usedQuestions = usedQuestions.concat(questions.map(q=>q.q));
-
-  i=0;
-  score=0;
-  wrongList=[];
-
-  document.getElementById("result").style.display="none";
-  document.getElementById("quiz").style.display="block";
-  document.getElementById("retryNewBtn").style.display="none";
-
-  show();
-}
 
   // 間違えた問題だけにする
   questions = wrongList.map(w => ({
@@ -1702,6 +1673,39 @@ function nextQuestion(){
   document.getElementById("retryBtn").style.display="none";
 
   show();
+}
+// ===== 別問題でもう一回 =====
+function retryNew(){
+
+  let count = questions.length;
+
+  // 前回使ってない問題だけ抽出
+  let filtered = base.filter(q => !usedQuestions.includes(q.q));
+
+  // 足りなかったら全体
+  if(filtered.length < count){
+    filtered = [...base];
+  }
+
+  shuffle(filtered);
+
+  questions = filtered.slice(0,count);
+
+  // 履歴更新
+  usedQuestions = usedQuestions.concat(questions.map(q=>q.q));
+
+  i=0;
+  score=0;
+  wrongList=[];
+
+  // 画面切替
+  document.getElementById("result").style.display="none";
+  document.getElementById("quiz").style.display="block";
+  document.getElementById("retryNewBtn").style.display="none";
+  document.getElementById("retryBtn").style.display="none";
+
+  show();
+}
 }
 </script>
 

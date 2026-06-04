@@ -62,6 +62,11 @@ margin-top:10px;
 </div>
 
 <div id="result" class="card" style="display:none;"></div>
+  
+<button id="retryNewBtn" class="mainBtn" style="display:none;" onclick="retryNew()">
+  🔄 別問題でもう一回
+</button>
+
 <button id="retryBtn"class="mainBtn"style="display:none;"onclick="retryWrong()">間違い問題だけ再挑戦🔥</button>
 
 <script>
@@ -1496,6 +1501,7 @@ multi:true
 // ===== 変数 =====
 let questions=[],i=0,score=0,sel=[];
 let wrongList = []; // ←追加（global）
+let usedQuestions = []; // ←追加
 
 // ===== シャッフル =====
 function shuffle(arr){
@@ -1510,16 +1516,19 @@ function start(){
   let count=parseInt(document.getElementById("count").value);
 
   questions=[];
-  while(questions.length<count){
-    let copy=[...base];
-    shuffle(copy);
-    questions=questions.concat(copy);
-  }
-  questions=questions.slice(0,count);
+  usedQuestions = []; // ←初回リセット
+
+  let available = [...base];
+
+  shuffle(available);
+
+  questions = available.slice(0,count);
+
+  usedQuestions = questions.map(q => q.q);
 
   i=0;
   score=0;
-  wrongList = []; // ←これ絶対必要
+  wrongList=[];
 
   document.getElementById("setup").style.display="none";
   document.getElementById("quiz").style.display="block";
@@ -1643,6 +1652,36 @@ function nextQuestion(){
   if(wrongList.length === 0){
     return;
   }
+
+    function retryNew(){
+
+  let count = questions.length;
+
+  // 前回使ってない問題だけ抽出
+  let filtered = base.filter(q => !usedQuestions.includes(q.q));
+
+  // 足りない場合は全体から補充
+  if(filtered.length < count){
+    filtered = [...base];
+  }
+
+  shuffle(filtered);
+
+  questions = filtered.slice(0,count);
+
+  // 今回の問題も履歴に追加
+  usedQuestions = usedQuestions.concat(questions.map(q=>q.q));
+
+  i=0;
+  score=0;
+  wrongList=[];
+
+  document.getElementById("result").style.display="none";
+  document.getElementById("quiz").style.display="block";
+  document.getElementById("retryNewBtn").style.display="none";
+
+  show();
+}
 
   // 間違えた問題だけにする
   questions = wrongList.map(w => ({

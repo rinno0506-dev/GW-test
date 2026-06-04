@@ -1614,6 +1614,7 @@ function nextQuestion(){
   }else{
     document.getElementById("quiz").style.display="none";
     document.getElementById("result").style.display="block";
+    document.getElementById("retryNewBtn").style.display="block";
 
     let html = "<h3>スコア："+score+"/"+questions.length+"</h3>";
 
@@ -1705,7 +1706,7 @@ function retryNew(){
   document.getElementById("retryBtn").style.display="none";
 
   show();
-
+}
 </script>
 
 </body>
